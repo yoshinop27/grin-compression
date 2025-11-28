@@ -1,13 +1,13 @@
 # Project: Grin Compression
 
-Authors: (_TODO: fill in names here!_)
+Authors: preston yoshino
 
 ## Resources
 
-*   (_TODO: fill in resources here!_)
-*   ...
-*   ...
+- (_TODO: fill in resources here!_)
+- ...
+- ...
 
 ## Revision Log
 
-*   (_TODO: fill in your changes to your project here!_)
+- (_TODO: fill in your changes to your project here!_)
