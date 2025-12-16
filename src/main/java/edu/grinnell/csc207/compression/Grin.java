@@ -17,8 +17,11 @@ public class Grin {
      * .grin file denoted by outfile.
      * @param infile the file to decode
      * @param outfile the file to ouptut to
+     * @throws IOException 
+     * @throws IllegalArgumentException 
      */
-    public static void decode (String infile, String outfile) throws IOException, IllegalArgumentException{
+    public static void decode(String infile, String outfile)
+            throws IOException, IllegalArgumentException {
         // create bit stream
         BitInputStream in = new BitInputStream(infile);
         BitOutputStream out = new BitOutputStream(outfile);
@@ -44,7 +47,8 @@ public class Grin {
      * @return a freqency map for the given file
      * @throws IOexception
      */
-    public static Map<Short, Integer> createFrequencyMap (String file) throws IOException {
+    public static Map<Short, Integer> createFrequencyMap(String file)
+            throws IOException {
         // create map
         Map<Short, Integer> freqs = new HashMap<>();
         // input stream
@@ -101,11 +105,13 @@ public class Grin {
         System.out.println("Usage: java Grin <encode|decode> <infile> <outfile>");
 
         // Check args
-        if (args.length != 3) throw new IllegalArgumentException();
+        if (args.length != 3) {
+            throw new IllegalArgumentException();
+        }
         // run program
         if (args[0].toLowerCase().equals("encode")) {
             encode(args[1], args[2]);
-        } else if (args[0].toLowerCase().equals("decode")){
+        } else if (args[0].toLowerCase().equals("decode")) {
             decode(args[1], args[2]);
         } else {
             throw new IllegalArgumentException();

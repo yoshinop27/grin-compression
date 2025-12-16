@@ -23,7 +23,7 @@ public class HuffmanTree {
      * Constructs a new HuffmanTree from a frequency map.
      * @param freqs a map from 9-bit values to frequencies.
      */
-    public HuffmanTree (Map<Short, Integer> freqs) {
+    public HuffmanTree(Map<Short, Integer> freqs) {
         // Create priority queue
         PriorityQueue<Node> pq = new PriorityQueue<>();
 
@@ -32,13 +32,13 @@ public class HuffmanTree {
         pq.add(eof);
         
         // Create a pair for each entry in freqs, add to priority queue
-        for (Map.Entry<Short, Integer> e: freqs.entrySet()){
-            Node p = new Node(e.getValue(), e.getKey()); 
+        for (Map.Entry<Short, Integer> e : freqs.entrySet()) {
+            Node p = new Node(e.getValue(), e.getKey());
             pq.add(p);
         }
 
         // Build Huffman Tree
-        while (pq.size() >= 2){
+        while (pq.size() >= 2) {
             Node left = pq.poll();
             Node right = pq.poll();
             Node newNode = new Node(left.freq + right.freq, left, right);
@@ -53,8 +53,8 @@ public class HuffmanTree {
      * Constructs a new HuffmanTree from the given file.
      * @param in the input file (as a BitInputStream)
      */
-    public HuffmanTree (BitInputStream in) {
-        this.root = HuffmanTreeH(in);
+    public HuffmanTree(BitInputStream in) {
+        this.root = huffmanTreeH(in);
     }
 
     /**
@@ -62,14 +62,14 @@ public class HuffmanTree {
      * @param in filereader
      * @return a huffman tree
      */
-    public Node HuffmanTreeH(BitInputStream in) {
+    public Node huffmanTreeH(BitInputStream in) {
         int tag;
         // Read the file
         tag = in.readBit();
-        if (tag == 1){
+        if (tag == 1) {
             // Internal Node
-            Node left = HuffmanTreeH(in);
-            Node right = HuffmanTreeH(in);
+            Node left = huffmanTreeH(in);
+            Node right = huffmanTreeH(in);
             return new Node(0, left, right);
         } else {
             // Leaf Node
@@ -83,20 +83,22 @@ public class HuffmanTree {
      * serialized format.
      * @param out the output file as a BitOutputStream
      */
-    public void serialize (BitOutputStream out) {
+    public void serialize(BitOutputStream out) {
         serializeH(out, this.root);
     }
 
     /**
-     * Write huffman tree to file 
+     * Write huffman tree to file
      * @param out file to write to
      * @param node root node to start on
      */
-    public void serializeH (BitOutputStream out, Node node){
+    public void serializeH(BitOutputStream out, Node node) {
         // Check if null
-        if (node == null) return;
+        if (node == null) {
+            return;
+        }
         // Check if internal node, write to file
-        if (node.value.isPresent()){
+        if (node.value.isPresent()) {
             out.writeBit(0);
             out.writeBits(node.value.get(), 9);
         } else {
@@ -114,7 +116,7 @@ public class HuffmanTree {
      * @param in the file to compress.
      * @param out the file to write the compressed output to.
      */
-    public void encode (BitInputStream in, BitOutputStream out) {
+    public void encode(BitInputStream in, BitOutputStream out) {
 
         // DFS on tree and add every char to a map
         Map<Short, String> map = new HashMap<>();
@@ -126,13 +128,13 @@ public class HuffmanTree {
             // pull from map
             String compressed = map.get((short) bits);
             // Loop through compressed code and write
-            for (char c : compressed.toCharArray()){
+            for (char c : compressed.toCharArray()) {
                 out.writeBit(c - '0'); // normalize from char to bit
             }
         }
         // Write eof
         String eof = map.get((short) 0b100000000);
-        for (char c : eof.toCharArray()){
+        for (char c : eof.toCharArray()) {
             out.writeBit(c - '0');
         }
     }
@@ -143,11 +145,13 @@ public class HuffmanTree {
      * @param node current node to evaluate
      * @param path bit path
      */
-    public void findCodes (Map<Short, String> map, Node node, String path) {
+    public void findCodes(Map<Short, String> map, Node node, String path) {
         // Null check
-        if (node == null) return;
+        if (node == null) {
+            return;
+        }
         // Keep traversing and building path
-        if (node.value.isEmpty()){
+        if (node.value.isEmpty()) {
             findCodes(map, node.left, path + "0");
             findCodes(map, node.right, path + "1");
         } else {
@@ -164,22 +168,22 @@ public class HuffmanTree {
      * @param in the file to decompress.
      * @param out the file to write the decompressed output to.
      */
-    public void decode (BitInputStream in, BitOutputStream out) {
+    public void decode(BitInputStream in, BitOutputStream out) {
 
         // Huffman tree for decoding
         Node cur = this.root;
 
         // Read the file
         int bit;
-        while((bit = in.readBit()) != -1){
+        while ((bit = in.readBit()) != -1) {
             // Traverse huffman tree
-            if (bit == 0){
+            if (bit == 0) {
                 cur = cur.left;
             } else {
                 cur = cur.right;
             }
             // Check for value
-            if (cur.value.isPresent()){
+            if (cur.value.isPresent()) {
                 short val = cur.value.get();
                 if (val == (short) 0b100000000) {
                     break; // stop on EOF
@@ -193,7 +197,7 @@ public class HuffmanTree {
     /**
      * Node class to act as internal nodes for huffman tree
      */
-    class Node implements Comparable<Node>{
+    class Node implements Comparable<Node> {
         // Fields
         int freq;
         Optional<Short> value;
@@ -203,9 +207,10 @@ public class HuffmanTree {
         /**
          * Constructor for merging two leaves together
          * @param freq of character
-         * @param value 9 bit binary value
+         * @param left left child node
+         * @param right right child node
          */
-        public Node (int freq, Node left, Node right){
+        public Node(int freq, Node left, Node right) {
             this.freq = freq;
             this.value = Optional.empty();
             this.left = left;
@@ -217,24 +222,28 @@ public class HuffmanTree {
          * @param freq of character
          * @param value 9 bit binary value
          */
-        public Node (int freq, short value){
+        public Node(int freq, short value) {
             this.freq = freq;
             this.value = Optional.of(value);
             this.left = null;
             this.right = null;
         }
 
-        @Override
         /**
          * Implementing compare to function to enable comparing between nodes
          * @param other node object to compare to
          * @return 1 if object called on is greater, -1 if less, 0 if equal
          */
+        @Override
         public int compareTo(Node other) {
             // Compare by frequencies
-            if (this.freq > other.freq) return 1;
-            else if (this.freq < other.freq) return -1;
-            else return 0; 
+            if (this.freq > other.freq) {
+                return 1;
+            } else if (this.freq < other.freq) {
+                return -1;
+            } else {
+                return 0;
+            }
         }
     }
 }
